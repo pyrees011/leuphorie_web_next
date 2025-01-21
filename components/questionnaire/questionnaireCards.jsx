@@ -7,12 +7,11 @@ import { Card } from "@/components/ui/card"
 import { Check } from 'lucide-react';
 
 export default function QuestionnaireCards({ option, selectedOption, handleClick }) {
-    console.log(selectedOption)
     const Icon = option.icon
     return (
         <Card
             key={option.id}
-            className={`p-6 h-80 flex flex-col justify-center items-center cursor-pointer transition-colors relative ${
+            className={`p-6 xl:h-80 2xl:h-[26rem] flex flex-col justify-center items-center cursor-pointer transition-colors relative ${
             selectedOption === option.id ? "bg-[#1C1F1E] text-white" : "hover:bg-gray-50"
             }`}
             onClick={() => handleClick(option.id)}

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Image from "next/image"
+import { useRouter } from "next/router"
 
 // shadecn components
 import { Button } from "@/components/ui/button"
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import QuestionnaireCards from "@/components/questionnaire/questionnaireCards"
 
 // lucide icons
-import { Briefcase, Palette, Code, LineChart } from "lucide-react"
+import { Smile, ThumbsUp, Meh, Frown, Activity, Calendar, CalendarDays, XCircle, Coffee, Zap, AlertCircle, Moon, CloudMoon, Cloud, CloudOff, Apple, Sandwich, Pizza, Cookie, Battery, BatteryMedium, BatteryLow, AlertTriangle } from "lucide-react"
 
 // utils
 import { cn } from "@/lib/utils"
@@ -17,11 +18,26 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 export default function health() {
-  const [selectedOption, setSelectedOption] = useState("design")
-  const [currentStep, setCurrentStep] = useState(2)
+  const router = useRouter()
+  const [selectedOption, setSelectedOption] = useState("")
+  const [currentStep, setCurrentStep] = useState(1)
 
-  const handleClick = (id) => {
+  const handleQuestionCardClick = (id) => {
     setSelectedOption(id)
+    setTimeout(() => {
+      setCurrentStep(prev => {
+        if (prev < 6) {
+          return prev + 1
+        }
+        return prev
+      })
+    }, 500)
+  }
+
+  const handleContinueClick = () => {
+    // TODO: send data to backend and redirect to signup page
+    // router.push("/")
+    console.log("Continue")
   }
 
   return (
@@ -66,11 +82,11 @@ export default function health() {
       </motion.div>
 
       {/* Question */}
-      <h1 className="text-7xl w-4/5 font-semibold mb-8">What kind of work do you do?</h1>
+      <h1 className="text-7xl w-4/5 font-semibold mb-8">{ questions[currentStep - 1].question }</h1>
 
       {/* Options Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 bg-gray-100 p-6 rounded-xl">
-        {options.map((option) => {
+        {questions[currentStep - 1].options.map((option) => {
           const isSelected = selectedOption === option.id
           return (
             <motion.div
@@ -84,7 +100,7 @@ export default function health() {
               <QuestionnaireCards 
                 option={option}
                 selectedOption={selectedOption}
-                handleClick={handleClick}
+                handleClick={handleQuestionCardClick}
               />
             </motion.div>
           )
@@ -93,20 +109,20 @@ export default function health() {
 
       {/* Navigation */}
       <div className="flex justify-start gap-4">
+      { currentStep > 1 && 
         <FooterButton className="text-black bg-white hover:text-white border-black border" text="Back" handleClick={() => {
           if (currentStep > 1) {
             setCurrentStep(prev => prev - 1)
           }
         }} />
+        }
+        { currentStep == 6 &&
         <FooterButton 
           className="bg-green-500 hover:bg-green-600 text-white" 
           text="Continue" 
-          handleClick={() => {
-            if (currentStep < 6) {
-              setCurrentStep(prev => prev + 1)
-            }
-          }} 
+          handleClick={handleContinueClick} 
         />
+        }
       </div>
     </div>
     <div className="md:col-span-2 xl:col-span-2 ml-2">
@@ -122,10 +138,66 @@ const FooterButton = ({ text, className, handleClick }) => {
   )
 }
 
-const options = [
-    { id: "business", label: "Business management", icon: Briefcase },
-    { id: "design", label: "Design", icon: Palette },
-    { id: "development", label: "Development", icon: Code },
-    { id: "marketing", label: "Marketing", icon: LineChart },
-  ]
+const questions = [
+  {
+    id: 1,
+    question: "Rate your overall physical health?",
+    options: [
+      { id: "excellent", label: "Excellent - I feel great", icon: Smile },
+      { id: "good", label: "Good - Generally healthy", icon: ThumbsUp },
+      { id: "fair", label: "Fair - Could be better", icon: Meh },
+      { id: "poor", label: "Poor - Need improvement", icon: Frown }
+    ]
+  },
+  {
+    id: 2, 
+    question: "How often do you exercise?",
+    options: [
+      { id: "daily", label: "Daily", icon: Activity },
+      { id: "weekly", label: "2-3 times per week", icon: Calendar },
+      { id: "monthly", label: "A few times per month", icon: CalendarDays },
+      { id: "rarely", label: "Rarely or never", icon: XCircle }
+    ]
+  },
+  {
+    id: 3,
+    question: "Describe your stress levels?",
+    options: [
+      { id: "low", label: "Low - Well managed", icon: Coffee },
+      { id: "moderate", label: "Moderate - Sometimes stressed", icon: AlertCircle },
+      { id: "high", label: "High - Often stressed", icon: Zap },
+      { id: "severe", label: "Severe - Constantly stressed", icon: AlertTriangle }
+    ]
+  },
+  {
+    id: 4,
+    question: "How well do you sleep on average?",
+    options: [
+      { id: "verywell", label: "Very well (7-9 hours)", icon: Moon },
+      { id: "okay", label: "Okay (5-7 hours)", icon: CloudMoon },
+      { id: "poor", label: "Poor (3-5 hours)", icon: Cloud },
+      { id: "insomnia", label: "Difficulty sleeping", icon: CloudOff }
+    ]
+  },
+  {
+    id: 5,
+    question: "How would you rate your diet?",
+    options: [
+      { id: "excellent", label: "Very healthy & balanced", icon: Apple },
+      { id: "good", label: "Generally healthy", icon: Sandwich },
+      { id: "fair", label: "Sometimes healthy", icon: Pizza },
+      { id: "poor", label: "Needs improvement", icon: Cookie }
+    ]
+  },
+  {
+    id: 6,
+    question: "Energy levels throughout the day?",
+    options: [
+      { id: "always", label: "Always energetic", icon: Zap },
+      { id: "mostly", label: "Mostly energetic", icon: Battery },
+      { id: "sometimes", label: "Sometimes energetic", icon: BatteryMedium },
+      { id: "rarely", label: "Rarely energetic", icon: BatteryLow }
+    ]
+  }
+]
 
