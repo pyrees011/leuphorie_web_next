@@ -19,29 +19,44 @@ import { motion } from "framer-motion"
 
 export default function health() {
   const router = useRouter()
-  const [selectedOption, setSelectedOption] = useState("")
+  const [selectedOption, setSelectedOption] = useState([
+    {id: 1, answer: ""},
+    {id: 2, answer: ""},
+    {id: 3, answer: ""},
+    {id: 4, answer: ""},
+    {id: 5, answer: ""},
+    {id: 6, answer: ""}
+  ])
   const [currentStep, setCurrentStep] = useState(1)
 
   const handleQuestionCardClick = (id) => {
-    setSelectedOption(id)
-    setTimeout(() => {
-      setCurrentStep(prev => {
-        if (prev < 6) {
-          return prev + 1
-        }
-        return prev
-      })
-    }, 500)
+    setSelectedOption(prev => {
+      const newState = [...prev]
+      newState[currentStep - 1].answer = id
+      return newState
+    })
+    setCurrentStep(prev => {
+      if (prev < 6) {
+        return prev + 1
+      }
+      return prev
+    })
   }
 
   const handleContinueClick = () => {
     // TODO: send data to backend and redirect to signup page
     // router.push("/")
-    console.log("Continue")
+    if (currentStep == 6) {
+      console.log("Continue")
+      // TODO: send data to backend and redirect to signup page
+      // router.push("/")
+    } else {
+      setCurrentStep(prev => prev + 1)
+    }
   }
 
   return (
-    <div className="grid md:grid-cols-5 xl:grid-cols-7 p-8 overflow-hidden">
+    <div className="grid md:grid-cols-5 xl:grid-cols-7 p-8 overflow-hidden min-h-screen">
       <div className="w-full md:col-span-3 xl:col-span-5 mx-auto px-6">
         {/* Logo */}
         <div className="flex items-center gap-1 mb-8">
@@ -99,7 +114,7 @@ export default function health() {
             >
               <QuestionnaireCards 
                 option={option}
-                selectedOption={selectedOption}
+                selectedOption={selectedOption[currentStep - 1].answer}
                 handleClick={handleQuestionCardClick}
               />
             </motion.div>
@@ -116,7 +131,7 @@ export default function health() {
           }
         }} />
         }
-        { currentStep == 6 &&
+        { selectedOption[currentStep - 1].answer !== "" &&
         <FooterButton 
           className="bg-green-500 hover:bg-green-600 text-white" 
           text="Continue" 
