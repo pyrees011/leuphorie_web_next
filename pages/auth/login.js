@@ -1,17 +1,49 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+
+// Firebase
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../../config/firebase-config";
 
 const Login = () => {
+  // TODO: Add loading state
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Login Data:", data);
-    alert("Login Successful! (Simulated)");
+  const onSubmit = async (data) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+
+      router.push("/");
+    } catch (error) {
+      console.error("Login Error:", error);
+    }
   };
+
+  // TODO: finish this
+  const handleLoginByGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+
+      console.log(userCredential);
+    } catch (error) {
+      console.error("Login Error:", error);
+    }
+  }
+  
+  // TODO: finish this
+  const handleLoginByFacebook = async () => {
+    const provider = new FacebookAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    console.log(userCredential);
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -49,7 +81,7 @@ const Login = () => {
               Log In
             </button>
 
-            <p className="text-center text-gray-600 mt-4">
+            <p className="flex justify-center text-center text-gray-600 mt-4 gap-1">
               Don't have an account? <a href="/auth/signup" className="text-[#FAC0CC] font-bold">Sign Up</a>
             </p>
           </div>

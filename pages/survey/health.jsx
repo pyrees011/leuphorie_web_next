@@ -49,7 +49,7 @@ export default function health() {
     if (currentStep == 6) {
       console.log("Continue")
       // TODO: send data to backend and redirect to signup page
-      // router.push("/")
+      router.push("/")
     } else {
       setCurrentStep(prev => prev + 1)
     }
