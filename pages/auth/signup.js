@@ -20,7 +20,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen font-mona">
       <div className="bg-[#E8F3E2] p-8 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center text-[#F1AEC6] mb-6">Sign Up</h2>
 

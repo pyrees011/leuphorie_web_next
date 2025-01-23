@@ -8,8 +8,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
+        background: "var(--background)", // Ensure --background is defined in CSS
         foreground: "var(--foreground)",
+      },
+      fontFamily: {
+        mona: ["Mona Sans", "sans-serif"], // ✅ Now correctly placed
       },
     },
   },
