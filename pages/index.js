@@ -26,7 +26,6 @@ const LandingPage = () => {
           </Link>
         </div>
       </nav>
-
       {/* Hero Section */}
       <header className="text-center py-20">
         <motion.h1 
