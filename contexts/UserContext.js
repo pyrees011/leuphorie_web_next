@@ -50,11 +50,11 @@ export function useUser() {
               email: user.email,
               token: token
             });
-            setIsLoading(false); // Stop loading once user data is set
+            setIsLoading(false);
           });
         } else {
-          setIsLoading(false); // No user logged in
-          router.push("/auth/login"); // Redirect unauthenticated users
+          setIsLoading(false);
+          router.push("/auth/login");
         }
       });
   
@@ -63,3 +63,8 @@ export function useUser() {
   
     return { user: context.user, isLoading, updateUser: context.updateUser };
   }
+
+export const useAuth = () => {
+  const authContext = useContext(UserContext);
+  return authContext;
+}

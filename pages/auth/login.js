@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+
+// Contexts
+import { useAuth } from "@/contexts/UserContext";
 
 // Firebase
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
@@ -9,18 +12,25 @@ import { auth } from "../../config/firebase-config";
 const Login = () => {
   // TODO: Add loading state
   const router = useRouter();
-
+  const { user } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  // TODO: clean the useEffect
+  useEffect(() => {
+    if (user) {
+      router.push("/home");
+    }
+  }, [user]);
+
   const onSubmit = async (data) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
 
-      router.push("/");
+      router.push("/home");
     } catch (error) {
       console.error("Login Error:", error);
     }

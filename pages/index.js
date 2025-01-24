@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
+// components
+import Hero from "@/components/landing/hero";
+import Features from "@/components/landing/features";
+import Pricing from "@/components/landing/pricing";
+import Faq from "@/components/landing/faq";
+import Footer from "@/components/footer";
+
+// Contexts
+import { useAuth } from "@/contexts/UserContext";
+
 const LandingPage = () => {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // TODO: clean the useEffect
+  useEffect(() => {
+    if (user) {
+      router.push("/home");
+    }
+  }, [user]);
+
+  // TODO: Add a loading state
   // TODO: Add a scroll to top button
   // TODO: add state management
   // TODO: refactor the page
@@ -78,6 +100,12 @@ const LandingPage = () => {
           ))}
         </div>
       </section>
+
+      <Hero />
+      <Features />
+      <Pricing />
+      <Faq />
+      <Footer />
       {/* TODO: Footer */}
     </div>
   );
