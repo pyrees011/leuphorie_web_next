@@ -4,10 +4,13 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 const LandingPage = () => {
+  // TODO: Add a scroll to top button
+  // TODO: add state management
+  // TODO: refactor the page
   return (
-    <div className="bg-[#E8F3E2] text-gray-900 font-mona">
+    <div className="bg-white text-gray-900 font-mona">
       {/* Navbar */}
-      <nav className="flex justify-between items-center px-8 py-4 bg-white shadow-md">
+      <nav className="flex justify-between items-center px-8 py-4">
         <div className="text-2xl font-bold text-[#C4D6D9]">Leuphorie</div>
         <div className="hidden md:flex space-x-6">
           <Link href="/" className="hover:text-[#F1AEC6]">Home</Link>
@@ -75,16 +78,7 @@ const LandingPage = () => {
           ))}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-6 bg-[#C4D6D9] text-white text-center">
-        <div className="flex justify-center space-x-4">
-          <Image src="/assets/facebook.png" alt="Facebook" width={30} height={30} />
-          <Image src="/assets/google.png" alt="Google" width={30} height={30} />
-          <Image src="/assets/apple-logo.png" alt="Apple" width={30} height={30} />
-        </div>
-        <p className="mt-4">© 2025 Leuphorie. All rights reserved.</p>
-      </footer>
+      {/* TODO: Footer */}
     </div>
   );
 };
