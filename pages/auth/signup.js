@@ -57,7 +57,7 @@ const SignUp = () => {
 
   // TODO: clean the useEffect
   useEffect(() => {
-    if (user) {
+    if (user.token) {
       router.push("/home");
     }
   }, [user]);

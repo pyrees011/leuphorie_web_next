@@ -13,6 +13,9 @@ const Login = () => {
   // TODO: Add loading state
   const router = useRouter();
   const { user } = useAuth();
+
+  console.log("login", user)
+
   const {
     register,
     handleSubmit,
@@ -21,7 +24,7 @@ const Login = () => {
 
   // TODO: clean the useEffect
   useEffect(() => {
-    if (user) {
+    if (user.token) {
       router.push("/home");
     }
   }, [user]);

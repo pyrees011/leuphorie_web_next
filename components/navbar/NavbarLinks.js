@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { useRouter } from "next/router"
 
 // components
 import { Button } from "../ui/button"
@@ -6,15 +6,22 @@ import { Button } from "../ui/button"
 // utils
 import { cn } from "@/lib/utils"
 
-function NavbarLinks({ navTabs }) {
+function NavbarLinks({ navTabs, active }) {
+  const router = useRouter()
+
+  const handleClick = () => {
+    navTabs.active = true
+    router.push(navTabs.href)
+  }
+
   return (
       <Button variant="ghost" className={cn('w-full justify-start py-7 text-gray-400', navTabs.className , {
-        'bg-black text-white hover:scale-110 hover:bg-black hover:text-white': navTabs.active,
+        'bg-black text-white hover:scale-110 hover:bg-black hover:text-white': active,
       })} asChild>
-        <Link href={navTabs.href}>
+        <Button variant="ghost" onClick={handleClick}>
           { navTabs.icon }
           <p className="font-semibold text-xs">{ navTabs.title }</p>
-        </Link>
+        </Button>
       </Button>
   )
 }

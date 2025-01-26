@@ -1,56 +1,58 @@
-export default function Footer() {
-    return (
-      <footer className="border-t">
-        <div className="container px-4 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-            <div className="col-span-2">
-              <h3 className="font-bold mb-4">Taskku</h3>
-              <address className="not-italic text-sm text-gray-500">
-                Technology Park
-                <br />
-                B-13 Main Cross Road
-                <br />
-                Business District
-                <br />
-                taskku@example.com
-              </address>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Platform</h4>
-              <ul className="space-y-2 text-sm text-gray-500">
-                <li>Analytics</li>
-                <li>Planning</li>
-                <li>Collaboration</li>
-                <li>Data Management</li>
-                <li>Integration</li>
-                <li>Security</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-gray-500">
-                <li>Customers</li>
-                <li>Strategic Partner</li>
-                <li>Community</li>
-                <li>Webinars & Events</li>
-                <li>Product & Video</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-gray-500">
-                <li>Customer Stories</li>
-                <li>Product & Pricing</li>
-                <li>Documentation</li>
-                <li>API Reference</li>
-                <li>Metrics Catalog</li>
-              </ul>
+const Footer = () => {
+  return (
+    <footer className="bg-white mt-12 py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="font-semibold text-lg mb-4">About Us</h3>
+            <p className="text-gray-600">
+              Dedicated to helping you achieve your wellness goals through personalized health tracking and guidance.
+            </p>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Home</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Dashboard</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Tasks</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Profile</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Support</h3>
+            <ul className="space-y-2">
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Help Center</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Contact Us</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Privacy Policy</a></li>
+              <li><a href="#" className="text-gray-600 hover:text-gray-900">Terms of Service</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Connect</h3>
+            <div className="flex space-x-4">
+              {/* Add your social media icons/links here */}
+              <a href="#" className="text-gray-600 hover:text-gray-900">
+                <span className="sr-only">Twitter</span>
+                {/* Add icon */}
+              </a>
+              {/* Add more social links */}
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t text-center text-sm text-gray-500">© 2024 Taskku. All rights reserved.</div>
         </div>
-      </footer>
-    )
-  }
+        
+        <div className="mt-8 pt-8 border-t">
+          <p className="text-center text-gray-600">
+            © {new Date().getFullYear()} Your App Name. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+export default Footer
   
   
