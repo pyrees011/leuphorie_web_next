@@ -1,128 +1,142 @@
-import { Bell, Github, Laptop, Link, AtSign, Send } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+
+// icons
+import { AtSign, Send, LinkIcon, message } from "lucide-react"
 
 // shade Components
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 // layout
-import AuthenticatedLayout from "@/layout/authenticatedLayout"
+import ChatLayout from "@/layout/chatLayout"
+import { cn } from "@/lib/utils"
 
 export default function ChatID({ id }) {
-    console.log("id", id)
+    // TODO: clean the useState
+    // TODO: possible make the global state (react query or redux)
+    // TODO: connect to the backend
+    // TODO: add the loading state
+    // TODO: add the error state
+    const [message, setMessage] = useState("")
+    const [chat, setChat] = useState([
+        {
+            id: 1,
+            message: "Hello, how are you?",
+            role: "user"
+        },
+        {
+            id: 2,
+            message: "I'm fine, thank you!",
+            role: "model"
+        },
+        {
+            id: 3,
+            message: "What is the weather in Tokyo?",
+            role: "user"
+        },
+        {
+            id: 4,
+            message: "The weather in Tokyo is sunny and warm.",
+            role: "model"
+        },
+        {
+            id: 5,
+            message: "What is the weather in Tokyo?",
+            role: "user"
+        },
+    ])
+    const chatContainerRef = useRef(null)
+
+    const scrollToBottom = () => {
+        chatContainerRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+
+    // TODO: clean the useEffect
+    useEffect(() => {
+        scrollToBottom()
+    }, [chat])
+
+
+    const handleSendMessage = (e) => {
+        e.preventDefault()
+        setChat([...chat, {
+            id: chat.length + 1,
+            message: message,
+            role: "user"
+        }])
+        setMessage("")
+    }
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            handleSendMessage(e)
+        }
+    }
+
   return (
-    <AuthenticatedLayout>
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold mb-1">Chat with Command R+</h1>
-            <p className="text-zinc-400">
-              A conversational tool for web searches, citing sources, research, drafting, debugging, and more.
-            </p>
-          </div>
-          <div className="flex gap-4">
-            <Button variant="ghost" size="icon">
-              <Github className="h-5 w-5" />
-              <span className="sr-only">GitHub</span>
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Laptop className="h-5 w-5" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
-          </div>
-        </header>
+    <ChatLayout>
+                <main className="mx-auto w-full flex flex-col justify-between px-6 py-8 bg-gray-100 rounded-tl-3xl flex-1">
 
-        {/* Main Content */}
-        <main className="space-y-12">
-          {/* Center Logo */}
-          <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <div className="w-16 h-16 bg-emerald-700/20 rounded-xl flex items-center justify-center">
-              <Bell className="w-8 h-8 text-emerald-500" />
+                <div className="flex flex-col overflow-y-auto xl:h-[600px]">
+                    { chat.map((messages) => (
+                        <MessageComponent key={messages.id} messages={messages} />
+                    )) }
+
+                    <div ref={chatContainerRef} />
+                </div>
+
+                    {/* Input Section */}
+                    <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex gap-2">
+                    <LinkIcon className="w-5 h-5 text-gray-400" />
+                    <AtSign className="w-5 h-5 text-gray-400" />
+                </div>
+                <Input
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="pl-16 pr-12 py-6 bg-white border-gray-200 text-gray-800"
+                    placeholder="Write a message here..."
+                    onKeyDown={handleKeyDown}
+                />
+                <Button
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700"
+                    size="icon"
+                    onClick={handleSendMessage}
+                >
+                    <Send className="w-4 h-4" />
+                    <span className="sr-only">Send message</span>
+                </Button>
             </div>
-            <h2 className="text-2xl font-semibold">Where knowledge begins</h2>
-            <p className="text-zinc-400 text-center">
-              Uses multiple sources and tools to answer questions with citations.
-            </p>
-          </div>
-
-          {/* Cards Grid */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <Card className="bg-zinc-900/50 border-zinc-800 p-6">
-              <h3 className="text-sm font-medium mb-4 uppercase tracking-wider text-zinc-400">Stay Updated</h3>
-              <p className="text-zinc-300">Rental Prices in North American Cities.</p>
-            </Card>
-            <Card className="bg-zinc-900/50 border-zinc-800 p-6">
-              <h3 className="text-sm font-medium mb-4 uppercase tracking-wider text-zinc-400">Research</h3>
-              <p className="text-zinc-300">Overview of the Solar Panel Industry.</p>
-            </Card>
-            <Card className="bg-zinc-900/50 border-zinc-800 p-6">
-              <h3 className="text-sm font-medium mb-4 uppercase tracking-wider text-zinc-400">Learn a Topic</h3>
-              <p className="text-zinc-300">Detailed explanation of trigonometry.</p>
-            </Card>
-          </div>
-
-          {/* Tools Section */}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="border-emerald-800/50 bg-emerald-900/10 text-emerald-500 hover:bg-emerald-900/20"
-            >
-              <span className="text-emerald-500 mr-2">$</span>
-              Python Runner
-              <span className="ml-2 opacity-60">×</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="border-emerald-800/50 bg-emerald-900/10 text-emerald-500 hover:bg-emerald-900/20"
-            >
-              <span className="text-emerald-500 mr-2">□</span>
-              Calculator
-              <span className="ml-2 opacity-60">×</span>
-            </Button>
-          </div>
-
-          {/* Input Section */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex gap-2">
-              <Link className="w-5 h-5 text-zinc-400" />
-              <AtSign className="w-5 h-5 text-zinc-400" />
-            </div>
-            <Input
-              className="pl-16 pr-12 py-6 bg-zinc-900/50 border-zinc-800 text-zinc-300"
-              placeholder="Write a message here..."
-            />
-            <Button
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700"
-              size="icon"
-            >
-              <Send className="w-4 h-4" />
-              <span className="sr-only">Send message</span>
-            </Button>
-          </div>
         </main>
 
         {/* Footer */}
-        <footer className="mt-8 text-center text-sm text-zinc-500">
-          Supernova can make mistakes. Check important info.
+        <footer className="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-500 border-t">
+          <p>AI responses may contain inaccuracies. Please verify important information.</p>
         </footer>
-
-        <div className="min-h-[200px] mb-6">
-              {/* Example message */}
-              <div className="flex items-start space-x-3 mb-4">
-                <Avatar>
-                  <AvatarImage src="/bot-avatar.png" />
-                  <AvatarFallback>AI</AvatarFallback>
-                </Avatar>
-                <div className="bg-gray-100 rounded-lg p-4 max-w-[80%]">
-                  <p className="text-gray-800">
-                    Hello! I'm your AI assistant. How can I help you today?
-                  </p>
-                </div>
-              </div>
-            </div>
-      </div>
-    </AuthenticatedLayout>
+    </ChatLayout>
   )
+}
+
+const MessageComponent = ({ messages }) => {
+    return (
+        <Card className={cn('bg-gradient-to-r from-emerald-800/10 to-emerald-600/10 border-none mb-8 w-fit', {
+            'ml-auto': messages.role === "user"
+        })}>
+            <CardContent className="p-4 flex justify-center items-center">
+                <p>{messages.message}</p>
+            </CardContent>
+        </Card>
+    )
+}
+
+const ExmapleAvatar = () => {
+    return (
+        <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+    )
 }
 

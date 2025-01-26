@@ -60,7 +60,7 @@ export default function Home() {
                 <Image src="/extender.png" alt="extender" width={8} height={8} className='mt-0.5'/>
             </div>
         </div>
-        <div className="md:max-w-6xl xl:min-w-full">
+        <div className="md:max-w-6xl xl:min-w-full 2xl:w-full">
             <div className="relative flex bg-gradient-to-r from-emerald-800/25 to-yellow-500/25 rounded-t-3xl p-12 py-16 overflow-hidden">
                 <div className="relative z-10 space-y-2">
                 <h1 className="text-4xl font-semibold flex items-center gap-3">
@@ -75,7 +75,7 @@ export default function Home() {
             </div>
         </div>
 
-        <div className=" relative max-w-7xl mx-auto px-4 py-8 bg-gray-100 rounded-tl-3xl">
+        <div className="relative mx-auto px-4 py-8 bg-gray-100 rounded-tl-3xl">
 
             <div className="absolute top-0 left-0 w-full h-5 bg-gradient-to-r from-emerald-800/25 to-yellow-500/25 z-[-10]" />
           {/* Dashboard Section */}

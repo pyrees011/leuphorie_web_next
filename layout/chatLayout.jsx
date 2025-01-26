@@ -17,10 +17,10 @@ import { Button } from "@/components/ui/button"
 export default function ChatLayout({ children }) {
   return (
     <AuthenticatedLayout>
-        <div className="min-h-screen">
+        <div className="min-h-screen flex flex-col">
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-white">
-          <div className="max-w-7xl mx-auto px-4">
+        <header className="sticky top-0 z-50 bg-white py-4">
+          <div className="mx-auto px-4">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-2">
                 <MessageSquare className="w-6 h-6 text-emerald-600" />
