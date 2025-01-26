@@ -65,6 +65,32 @@ export function useUser() {
   }
 
 export const useAuth = () => {
+  const router = useRouter()
   const authContext = useContext(UserContext);
-  return authContext;
+  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  
+    if (authContext === undefined) {
+      throw new Error("useUser must be used within a UserProvider");
+    }
+  
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          user.getIdToken().then((token) => {
+            authContext.updateUser({
+              username: user.displayName,
+              email: user.email,
+              token: token
+            });
+            router.push("/home");
+          });
+        } else {
+          setIsLoading(false);
+        }
+      });
+  
+      return () => unsubscribe();
+    }, []);
+  
+    return { user: authContext.user, isLoading, updateUser: authContext.updateUser };
 }

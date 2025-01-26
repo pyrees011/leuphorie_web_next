@@ -10,7 +10,7 @@ export default function AuthenticatedLayout({ children }) {
   return (
     <AnimatePresence mode="wait">
         <motion.div 
-        className="flex over"
+        className="flex"
         key="main-content"
         initial={{ y : 100, opacity: 0 }}
         animate={{ y : 0, opacity: 1 }}

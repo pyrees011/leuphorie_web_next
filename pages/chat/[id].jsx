@@ -5,9 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
-export default function Chat() {
+// layout
+import AuthenticatedLayout from "@/layout/authenticatedLayout"
+
+export default function ChatID({ id }) {
+    console.log("id", id)
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <AuthenticatedLayout>
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Header */}
         <header className="flex justify-between items-center mb-8">
@@ -102,8 +106,23 @@ export default function Chat() {
         <footer className="mt-8 text-center text-sm text-zinc-500">
           Supernova can make mistakes. Check important info.
         </footer>
+
+        <div className="min-h-[200px] mb-6">
+              {/* Example message */}
+              <div className="flex items-start space-x-3 mb-4">
+                <Avatar>
+                  <AvatarImage src="/bot-avatar.png" />
+                  <AvatarFallback>AI</AvatarFallback>
+                </Avatar>
+                <div className="bg-gray-100 rounded-lg p-4 max-w-[80%]">
+                  <p className="text-gray-800">
+                    Hello! I'm your AI assistant. How can I help you today?
+                  </p>
+                </div>
+              </div>
+            </div>
       </div>
-    </div>
+    </AuthenticatedLayout>
   )
 }
 
