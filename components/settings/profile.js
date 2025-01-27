@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Camera } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 const profileSchema = z.object({
   username: z.string().min(2, "Username must be at least 2 characters."),
@@ -15,11 +17,16 @@ const profileSchema = z.object({
 });
 
 const ProfileSettings = () => {
+  // TODO: attach the useForm to the profile state
+  // TODO: state management
+
   const [profile, setProfile] = useState({
     username: "Elkan",
     email: "elkan@example.com",
     avatar: "/assets/avatar-placeholder.png",
   });
+
+  const [isEditing, setIsEditing] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(profileSchema),
@@ -32,77 +39,65 @@ const ProfileSettings = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-[#C4D6D9] mb-4">Profile</h2>
-
-      {/* Avatar + Delete/Update Buttons */}
-      <div className="flex items-center space-x-6">
-        <Avatar>
-          <AvatarImage src={profile.avatar} />
-          <AvatarFallback>EL</AvatarFallback>
-        </Avatar>
-        <Button variant="destructive">Delete</Button>
-        <Button>Update</Button>
+    <div className="space-y-8">
+      {/* Profile Photo Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Profile Photo</h3>
+        <div className="flex items-center gap-6">
+          <Avatar className="w-20 h-20">
+            <AvatarImage src="/placeholder-avatar.jpg" />
+            <AvatarFallback>JD</AvatarFallback>
+          </Avatar>
+          <div className="space-y-2">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Camera className="w-4 h-4" />
+              Change Photo
+            </Button>
+            <p className="text-sm text-gray-500">
+              JPG, GIF or PNG. Max size of 800K
+            </p>
+          </div>
+        </div>
       </div>
 
-      <Separator className="my-6" />
-
-      {/* Display Username & Email (Static) */}
-      <div className="mb-4">
-        <label className="block text-[#F1AEC6] text-sm font-bold mb-1">Username</label>
-        <p className="text-lg">{profile.username}</p>
+      {/* Personal Information */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Personal Information</h3>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Full Name</Label>
+            <Input id="fullName" placeholder="John Doe" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
+            <Input id="username" placeholder="johndoe" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="john@example.com" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" />
+          </div>
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-[#F1AEC6] text-sm font-bold mb-1">Email</label>
-        <p className="text-lg">{profile.email}</p>
+      {/* Bio Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Bio</h3>
+        <textarea
+          className="w-full min-h-[100px] p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          placeholder="Write a short bio about yourself..."
+        />
       </div>
 
-      {/* Edit Profile Dialog */}
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant='outline'>Edit Profile</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className='text-black'>Edit Your Profile</DialogTitle>
-          </DialogHeader>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter username" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button type="submit">Save Changes</Button>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <Button className="bg-emerald-600 hover:bg-emerald-700">
+          Save Changes
+        </Button>
+      </div>
     </div>
   );
 };
