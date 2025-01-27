@@ -50,11 +50,11 @@ export function useUser() {
               email: user.email,
               token: token
             });
-            setIsLoading(false); // Stop loading once user data is set
+            setIsLoading(false);
           });
         } else {
-          setIsLoading(false); // No user logged in
-          router.push("/auth/login"); // Redirect unauthenticated users
+          setIsLoading(false);
+          router.push("/auth/login");
         }
       });
   
@@ -63,3 +63,34 @@ export function useUser() {
   
     return { user: context.user, isLoading, updateUser: context.updateUser };
   }
+
+export const useAuth = () => {
+  const router = useRouter()
+  const authContext = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  
+    if (authContext === undefined) {
+      throw new Error("useUser must be used within a UserProvider");
+    }
+  
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          user.getIdToken().then((token) => {
+            authContext.updateUser({
+              username: user.displayName,
+              email: user.email,
+              token: token
+            });
+            router.push("/home");
+          });
+        } else {
+          setIsLoading(false);
+        }
+      });
+  
+      return () => unsubscribe();
+    }, []);
+  
+    return { user: authContext.user, isLoading, updateUser: authContext.updateUser };
+}

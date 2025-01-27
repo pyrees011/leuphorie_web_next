@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+
+// Contexts
+import { useAuth } from "@/contexts/UserContext";
 
 // Firebase
 import { auth } from "../../config/firebase-config";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const SignUp = () => {
+  const { user } = useAuth();
   // TODO: Add loading state
   // TODO: Add logic to verify email - either confirm email or send verification email
   const {
@@ -50,6 +54,13 @@ const SignUp = () => {
       }
     }
   };
+
+  // TODO: clean the useEffect
+  useEffect(() => {
+    if (user.token) {
+      router.push("/home");
+    }
+  }, [user]);
 
   return (
     <div className="flex items-center justify-center min-h-screen font-mona">
