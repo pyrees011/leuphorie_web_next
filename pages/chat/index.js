@@ -22,6 +22,17 @@ import ChatLayout from "@/layout/chatLayout"
 export default function Chat() {
   const [message, setMessage] = useState("")
 
+  const handleSendMessage = () => {
+    console.log('message', message)
+    setMessage("")
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSendMessage()
+    }
+  }
+
   return (
     <ChatLayout>
         <main className="mx-auto w-full flex flex-col justify-between px-6 py-8 bg-gray-100 rounded-tl-3xl flex-1">
@@ -104,10 +115,12 @@ export default function Chat() {
                 onChange={(e) => setMessage(e.target.value)}
                 className="pl-16 pr-12 py-6 bg-white border-gray-200 text-gray-800"
                 placeholder="Write a message here..."
+                onKeyDown={handleKeyDown}
               />
               <Button
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700"
                 size="icon"
+                onClick={handleSendMessage}
               >
                 <Send className="w-4 h-4" />
                 <span className="sr-only">Send message</span>
