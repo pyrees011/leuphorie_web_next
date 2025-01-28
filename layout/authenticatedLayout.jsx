@@ -4,7 +4,7 @@ import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // Components
-import Navbar from '@/components/navbar/Navbar'
+import Navbar from '../components/navbar/Navbar'
 
 export default function AuthenticatedLayout({ children }) {
   return (
