@@ -1,7 +1,7 @@
-import React from 'react'
-import Image from 'next/image'
-import { Kanban, Plus, Search, Settings } from 'lucide-react'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import React, { useCallback } from 'react'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { useTasks } from '@/hooks/useTasks'
+import { Plus, Search, Kanban } from 'lucide-react'
 
 // shadcn
 import { Input } from "@/components/ui/input"
@@ -14,54 +14,53 @@ import TaskCard from "@/components/taskCard"
 import AuthenticatedLayout from "@/layout/authenticatedLayout"
 
 const KanbanBoard = () => {
+  const { tasks, categories, isLoading, updateTask } = useTasks()
+
+  const handleDragEnd = useCallback((result) => {
+    if (!result.destination) return
+
+    const { draggableId, destination } = result
+    
+    updateTask({
+      taskId: draggableId,
+      status: destination.droppableId.charAt(0).toUpperCase() + destination.droppableId.slice(1)
+    })
+  }, [updateTask])
+
+  if (isLoading) {
+    return (
+      <AuthenticatedLayout>
+        <div className="flex items-center justify-center h-screen">
+          Loading...
+        </div>
+      </AuthenticatedLayout>
+    )
+  }
+
   const columns = {
     todo: {
       title: "To Do",
-      count: 3,
+      count: tasks.todo.length,
       color: "bg-red-500",
-      tasks: [
-        {
-          id: "1",
-          title: "Wireframing",
-          tag: "UX stages",
-          tagColor: "bg-purple-100 text-purple-600",
-          description: "Create low-fidelity designs that outline the basic structure...",
-          progress: "0/8",
-          views: 2,
-          comments: 0,
-          attachments: 0,
-        },
-      ]
+      tasks: tasks.todo
     },
     inProgress: {
       title: "In Progress",
-      count: 2,
+      count: tasks.inProgress.length,
       color: "bg-emerald-500",
-      tasks: [
-        {
-          id: "2",
-          title: "Customer Journey Mapping",
-          tag: "UX stages",
-          tagColor: "bg-emerald-100 text-emerald-600",
-          description: "Identify the key touchpoints and pain points...",
-          progress: "3/10",
-          views: 6,
-          comments: 11,
-          attachments: 7,
-        },
-      ]
+      tasks: tasks.inProgress
     },
     review: {
       title: "Need Review",
-      count: 1,
+      count: tasks.review.length,
       color: "bg-yellow-500",
-      tasks: []
+      tasks: tasks.review
     },
     done: {
       title: "Done",
-      count: 2,
+      count: tasks.done.length,
       color: "bg-green-500",
-      tasks: []
+      tasks: tasks.done
     }
   }
 
@@ -110,7 +109,7 @@ const KanbanBoard = () => {
           </Card>
 
           {/* Kanban Board */}
-          <DragDropContext onDragEnd={() => {}}>
+          <DragDropContext onDragEnd={handleDragEnd}>
             <div className="grid grid-cols-4 gap-6">
               {Object.entries(columns).map(([columnId, column]) => (
                 <Droppable key={columnId} droppableId={columnId}>

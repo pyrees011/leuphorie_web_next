@@ -10,6 +10,7 @@ import { Draggable } from "react-beautiful-dnd"
 
 
 export default function TaskCard({ column, provided }) {
+    console.log("column", column)
   return (
     <Card
         ref={provided.innerRef}
