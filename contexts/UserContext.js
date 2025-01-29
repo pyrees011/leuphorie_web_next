@@ -46,6 +46,7 @@ export function useUser() {
         if (user) {
           user.getIdToken().then((token) => {
             context.updateUser({
+              id: user.uid,
               username: user.displayName,
               email: user.email,
               token: token
