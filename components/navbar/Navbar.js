@@ -22,15 +22,16 @@ import { Home, MessageCircle, User, FileText, Phone } from 'lucide-react'
 const NavbarTabs = [
   { title: 'MyNest', href: '/home', icon: <Home className="mr-2 h-4 w-4 fill-white" /> },
   { title: 'Chat', href: '/chat', icon: <MessageCircle className="mr-2 h-4 w-4 fill-white" /> },
-  { title: 'Zen', href: '/zen', icon: <User className="mr-2 h-4 w-4 fill-white" /> },
+  { title: 'Task', href: '/kanban', icon: <User className="mr-2 h-4 w-4 fill-white" /> },
   { title: 'Settings', href: '/settings', icon: <FileText className="mr-2 h-4 w-4 fill-white" /> },
   { title: 'Contact us', href: '/contact', icon: <Phone className="mr-2 h-4 w-4 fill-white" /> },
 ]
 
 export default function Navbar() {
   // TODO: add a logout button in the navbar
+  // TDOD: clean the code
   const { asPath, push } = useRouter()
-  const { user, updateUser } = useUser()
+  const { updateUser } = useUser()
 
   const handleSignOut = async () => {
     await signOut(auth)

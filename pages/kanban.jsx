@@ -1,40 +1,72 @@
-import React, { useCallback } from 'react'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { useTasks } from '@/hooks/useTasks'
-import { Plus, Search, Kanban } from 'lucide-react'
+import React, { useCallback } from 'react';
+import { DragDropContext } from 'react-beautiful-dnd';
+import { useTasks } from '@/hooks/useTasks';
+import { Search, Kanban } from 'lucide-react';
 
 // shadcn
-import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 // components
-import TaskCard from "@/components/taskCard"
+import TaskCard from "@/components/taskCard";
 
 // layout
-import AuthenticatedLayout from "@/layout/authenticatedLayout"
+import AuthenticatedLayout from "@/layout/authenticatedLayout";
+
+// context
+import { useUser } from '@/contexts/UserContext';
 
 const KanbanBoard = () => {
-  const { tasks, categories, isLoading, updateTask } = useTasks()
+  const { tasks, categories, isLoading, updateTask } = useTasks();
+  const { user } = useUser();
+
+  console.log("categories", categories);
+  console.log("tasks", tasks);
 
   const handleDragEnd = useCallback((result) => {
-    if (!result.destination) return
+    if (!result.destination) return;
 
-    const { draggableId, destination } = result
-    
+    const { draggableId, destination } = result;
+
+    // Find the task being dragged
+    const task = Object.values(tasks).flat().find(t => String(t._id) === draggableId);
+    if (!task) {
+      console.error("❌ Task not found!", draggableId);
+      return;
+    }
+
+    // Find category of the task
+    const category = categories.find(c => c.tasks.some(t => String(t._id) === draggableId));
+    if (!category) {
+      console.error("❌ Category not found for task!", draggableId);
+      return;
+    }
+
     updateTask({
+      categoryId: category._id,
       taskId: draggableId,
-      status: destination.droppableId.charAt(0).toUpperCase() + destination.droppableId.slice(1)
-    })
-  }, [updateTask])
+      status: destination.droppableId
+    });
+  }, [tasks, categories, updateTask]);
 
   if (isLoading) {
     return (
       <AuthenticatedLayout>
         <div className="flex items-center justify-center h-screen">
-          Loading...
+          <div className="text-lg">Loading tasks...</div>
         </div>
       </AuthenticatedLayout>
-    )
+    );
+  }
+
+  if (!user) {
+    return (
+      <AuthenticatedLayout>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-lg">Please log in to view tasks</div>
+        </div>
+      </AuthenticatedLayout>
+    );
   }
 
   const columns = {
@@ -50,11 +82,11 @@ const KanbanBoard = () => {
       color: "bg-emerald-500",
       tasks: tasks.inProgress
     },
-    review: {
+    reviewing: {
       title: "Need Review",
-      count: tasks.review.length,
+      count: tasks.reviewing.length,
       color: "bg-yellow-500",
-      tasks: tasks.review
+      tasks: tasks.reviewing
     },
     done: {
       title: "Done",
@@ -62,12 +94,11 @@ const KanbanBoard = () => {
       color: "bg-green-500",
       tasks: tasks.done
     }
-  }
+  };
 
   return (
     <AuthenticatedLayout>
       <div className="">
-        {/* Header */}
         <header className="sticky top-0 z-50 bg-white py-4">
           <div className="mx-auto px-4">
             <div className="flex items-center h-16">
@@ -80,50 +111,25 @@ const KanbanBoard = () => {
         </header>
 
         <main className="mx-auto px-6 py-8 rounded-3xl bg-gray-100">
-          {/* Hero Section */}
           <Card className="bg-gradient-to-r from-emerald-800/10 to-emerald-600/10 border-none p-8 mb-8">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <Kanban className="w-6 h-6 text-emerald-600" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-semibold">Project Tasks</h1>
-                  {/* <Progress value={33} className="w-32 h-1.5 mt-2" /> */}
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <Input
-                  type="text"
-                  placeholder="Search tasks..."
-                  className="w-64"
-                  prefix={<Search className="w-4 h-4 text-gray-400" />}
-                />
-                {/* <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Task
-                </Button> */}
-              </div>
+              <h1 className="text-2xl font-semibold">Project Tasks</h1>
+              <Input type="text" placeholder="Search tasks..." className="w-64" />
             </div>
           </Card>
 
-          {/* Kanban Board */}
-          <DragDropContext onDragEnd={handleDragEnd}>
+          <DragDropContext key={Object.keys(tasks).join("-")} onDragEnd={handleDragEnd}>
             <div className="grid grid-cols-4 gap-6">
               {Object.entries(columns).map(([columnId, column]) => (
-                <Droppable key={columnId} droppableId={columnId}>
-                  {(provided) => (
-                    <TaskCard column={column} provided={provided} />
-                  )}
-                </Droppable>
+                <TaskCard key={columnId} columnId={columnId} column={column} />
               ))}
             </div>
           </DragDropContext>
+
         </main>
       </div>
     </AuthenticatedLayout>
-  )
-}
+  );
+};
 
-export default KanbanBoard 
+export default KanbanBoard;

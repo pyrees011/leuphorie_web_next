@@ -7,17 +7,22 @@ export const taskService = {
     return data
   },
 
-  updateTaskStatus: async (axiosInstance, { taskId, status }) => {
-    const { data } = await axiosInstance.patch(`/categories/${taskId}`, { status })
+  updateTaskStatus: async (axiosInstance, { categoryId, taskId, status }) => {
+    const { data } = await axiosInstance.patch(
+      `/categories/${categoryId}/tasks/${taskId}/status`, 
+      { status }
+    );
+    return data;
+  },
+
+  createTask: async (task, categoryId, axiosInstance) => {
+    const { data } = await axiosInstance.post(`/categories/${categoryId}/tasks`, task)
     return data
   },
 
-  createTask: async (task, axiosInstance) => {
-    const { data } = await axiosInstance.post(`/categories`, task)
-    return data
-  },
-
-  deleteTask: async (taskId, axiosInstance) => {
-    await axiosInstance.delete(`/categories/${taskId}`)
+  deleteTask: async (categoryId, taskId, axiosInstance) => {
+    console.log("categoryId service", categoryId);
+    console.log("taskId service", taskId);
+    await axiosInstance.delete(`/categories/${categoryId}/tasks/${taskId}`)
   }
 } 
