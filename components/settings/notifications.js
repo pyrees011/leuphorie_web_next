@@ -1,24 +1,50 @@
 import { useState } from "react";
-import { Bell, Mail, Phone, MessageSquare } from "lucide-react";
+import { Bell, Mail, Smartphone, MessageSquare } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
+import { useUser } from "@/contexts/UserContext";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const NotificationSettings = () => {
-  // TODO: state management
-  // TODO: connect to the backend
-  const [emailNotifications, setEmailNotifications] = useState({
-    updates: true,
-    reminders: true,
-    newsletter: false,
-  });
+  const { user } = useUser();
+  const { toast } = useToast();
 
-  const [pushNotifications, setPushNotifications] = useState({
+  const [notifications, setNotifications] = useState({
+    emailUpdates: true,
     taskReminders: true,
+    newsletter: false,
+    pushReminders: true,
     healthAlerts: true,
     achievements: true,
+    smsAlerts: false,
   });
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`${API_BASE_URL}/${user.id}/notifications`, {
+        email_updates: notifications.emailUpdates,
+        task_reminders: notifications.taskReminders,
+        newsletter: notifications.newsletter,
+        push_reminders: notifications.pushReminders,
+        health_alerts: notifications.healthAlerts,
+        achievements: notifications.achievements,
+        sms_alerts: notifications.smsAlerts,
+      });
+
+      toast({ title: "Notification settings updated successfully!" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Couldn't update notifications.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -28,40 +54,31 @@ const NotificationSettings = () => {
           <Mail className="w-5 h-5 text-emerald-600" />
           <h3 className="text-lg font-semibold">Email Notifications</h3>
         </div>
-        <Card className="p-6 space-y-6">
+        <Card className="p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base">Updates and News</Label>
-              <p className="text-sm text-gray-500">Receive updates about new features and improvements</p>
-            </div>
+            <Label>Email Updates</Label>
             <Switch
-              checked={emailNotifications.updates}
+              checked={notifications.emailUpdates}
               onCheckedChange={(checked) =>
-                setEmailNotifications({ ...emailNotifications, updates: checked })
+                setNotifications({ ...notifications, emailUpdates: checked })
               }
             />
           </div>
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base">Task Reminders</Label>
-              <p className="text-sm text-gray-500">Get email reminders for upcoming and overdue tasks</p>
-            </div>
+            <Label>Task Reminders</Label>
             <Switch
-              checked={emailNotifications.reminders}
+              checked={notifications.taskReminders}
               onCheckedChange={(checked) =>
-                setEmailNotifications({ ...emailNotifications, reminders: checked })
+                setNotifications({ ...notifications, taskReminders: checked })
               }
             />
           </div>
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base">Newsletter</Label>
-              <p className="text-sm text-gray-500">Monthly newsletter with health tips and insights</p>
-            </div>
+            <Label>Newsletter</Label>
             <Switch
-              checked={emailNotifications.newsletter}
+              checked={notifications.newsletter}
               onCheckedChange={(checked) =>
-                setEmailNotifications({ ...emailNotifications, newsletter: checked })
+                setNotifications({ ...notifications, newsletter: checked })
               }
             />
           </div>
@@ -74,40 +91,50 @@ const NotificationSettings = () => {
           <Bell className="w-5 h-5 text-emerald-600" />
           <h3 className="text-lg font-semibold">Push Notifications</h3>
         </div>
-        <Card className="p-6 space-y-6">
+        <Card className="p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base">Task Reminders</Label>
-              <p className="text-sm text-gray-500">Real-time notifications for task deadlines</p>
-            </div>
+            <Label>Task Reminders</Label>
             <Switch
-              checked={pushNotifications.taskReminders}
+              checked={notifications.pushReminders}
               onCheckedChange={(checked) =>
-                setPushNotifications({ ...pushNotifications, taskReminders: checked })
+                setNotifications({ ...notifications, pushReminders: checked })
               }
             />
           </div>
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base">Health Alerts</Label>
-              <p className="text-sm text-gray-500">Important alerts about your health metrics</p>
-            </div>
+            <Label>Health Alerts</Label>
             <Switch
-              checked={pushNotifications.healthAlerts}
+              checked={notifications.healthAlerts}
               onCheckedChange={(checked) =>
-                setPushNotifications({ ...pushNotifications, healthAlerts: checked })
+                setNotifications({ ...notifications, healthAlerts: checked })
               }
             />
           </div>
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base">Achievements</Label>
-              <p className="text-sm text-gray-500">Notifications when you reach your goals</p>
-            </div>
+            <Label>Achievements</Label>
             <Switch
-              checked={pushNotifications.achievements}
+              checked={notifications.achievements}
               onCheckedChange={(checked) =>
-                setPushNotifications({ ...pushNotifications, achievements: checked })
+                setNotifications({ ...notifications, achievements: checked })
+              }
+            />
+          </div>
+        </Card>
+      </div>
+
+      {/* SMS Notifications */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Smartphone className="w-5 h-5 text-emerald-600" />
+          <h3 className="text-lg font-semibold">SMS Notifications</h3>
+        </div>
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <Label>SMS Alerts</Label>
+            <Switch
+              checked={notifications.smsAlerts}
+              onCheckedChange={(checked) =>
+                setNotifications({ ...notifications, smsAlerts: checked })
               }
             />
           </div>
@@ -116,7 +143,7 @@ const NotificationSettings = () => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button className="bg-emerald-600 hover:bg-emerald-700">
+        <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={handleUpdate}>
           Save Preferences
         </Button>
       </div>
