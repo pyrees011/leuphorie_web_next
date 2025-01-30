@@ -56,7 +56,6 @@ export default function health() {
     // router.push("/")
     if (currentStep == 6) {
 
-
       selectedOption.forEach(({ id, answer }) => {
         const questionnaireForm = {
           user_id: user.id,
@@ -67,7 +66,7 @@ export default function health() {
       })
 
       router.push("/home")
-      
+     
     } else {
       setCurrentStep(prev => prev + 1)
     }

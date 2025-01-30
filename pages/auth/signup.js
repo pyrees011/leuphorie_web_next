@@ -28,6 +28,8 @@ const SignUp = () => {
       setAuthError('');
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
+
+      // TODO: add api call to create user setting with user.id
   
       await updateProfile(user, {
         displayName: data.username,
@@ -56,8 +58,12 @@ const SignUp = () => {
   };
 
   // TODO: clean the useEffect
+  // break: this takes it to home page first before the questionnaire page
+
+
+  // TODO: don't let them in before they have completed the questionnaire
   useEffect(() => {
-    if (user.token) {
+    if (user?.token) {
       router.push("/home");
     }
   }, [user]);

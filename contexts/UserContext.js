@@ -6,92 +6,56 @@ import { auth } from '../config/firebase-config';
 import { onAuthStateChanged } from 'firebase/auth';
 const UserContext = createContext();
 
-export function UserProvider({ children }) {
-  const [user, setUser] = useState({
-    username: null,
-    email: null,
-    token: null
-  });
+export const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const token = await firebaseUser.getIdToken();
+        localStorage.setItem('token', token);
+        setUser({
+          id: firebaseUser.uid,
+          username: firebaseUser.displayName || '',
+          email: firebaseUser.email || '',
+          token
+        });
+        if (router.pathname === '/auth/login' || router.pathname === '/auth/signup') {
+          router.push('/home');
+        }
+      } else {
+        localStorage.removeItem('token');
+        setUser(null);
+        if (router.pathname !== '/auth/login' && router.pathname !== '/auth/signup' && router.pathname !== '/') {
+          router.push('/auth/login');
+        }
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const updateUser = (userData) => {
+    if (userData.token) {
+      localStorage.setItem('token', userData.token);
+    }
     setUser(userData);
   };
 
-  const clearUser = () => {
-    setUser({
-      username: null,
-      email: null,
-      token: null
-    });
-  };
-
   return (
-    <UserContext.Provider value={{ user, updateUser, clearUser }}>
+    <UserContext.Provider value={{ user, isLoading, updateUser }}>
       {children}
     </UserContext.Provider>
   );
-}
+};
 
-export function useUser() {
-    const router = useRouter();
-    const context = useContext(UserContext);
-    const [isLoading, setIsLoading] = useState(true); // Track loading state
-  
-    if (context === undefined) {
-      throw new Error("useUser must be used within a UserProvider");
-    }
-  
-    useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          user.getIdToken().then((token) => {
-            context.updateUser({
-              id: user.uid,
-              username: user.displayName,
-              email: user.email,
-              token: token
-            });
-            setIsLoading(false);
-          });
-        } else {
-          setIsLoading(false);
-          router.push("/auth/login");
-        }
-      });
-  
-      return () => unsubscribe();
-    }, []);
-  
-    return { user: context.user, isLoading, updateUser: context.updateUser };
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error("useUser must be used within a UserProvider");
   }
-
-export const useAuth = () => {
-  const router = useRouter()
-  const authContext = useContext(UserContext);
-  const [isLoading, setIsLoading] = useState(true); // Track loading state
-  
-    if (authContext === undefined) {
-      throw new Error("useUser must be used within a UserProvider");
-    }
-  
-    useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          user.getIdToken().then((token) => {
-            authContext.updateUser({
-              username: user.displayName,
-              email: user.email,
-              token: token
-            });
-            router.push("/home");
-          });
-        } else {
-          setIsLoading(false);
-        }
-      });
-  
-      return () => unsubscribe();
-    }, []);
-  
-    return { user: authContext.user, isLoading, updateUser: authContext.updateUser };
-}
+  return context;
+};
