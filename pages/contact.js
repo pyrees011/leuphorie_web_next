@@ -3,11 +3,9 @@ import {
   MessageSquare, 
   Mail, 
   Phone, 
-  MapPin, 
-  Clock,
-  MessagesSquare,
-  HelpCircle,
-  Send
+  MessagesSquare, 
+  HelpCircle, 
+  Send 
 } from "lucide-react";
 
 // shadcn components
@@ -16,15 +14,20 @@ import { Card } from "@/components/ui/card";
 import { Form, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Form validation
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+// Backend API
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+
 // Layout
 import AuthenticatedLayout from "@/layout/authenticatedLayout";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -34,36 +37,17 @@ const contactSchema = z.object({
 });
 
 const faqs = [
-  { 
-    question: "How do I get started?", 
-    answer: "Sign up for an account and complete the initial health assessment. We'll create a personalized plan for you." 
-  },
-  { 
-    question: "What's included in the free plan?", 
-    answer: "The free plan includes basic health tracking, daily reminders, and access to our community features." 
-  },
-  { 
-    question: "How secure is my data?", 
-    answer: "We use industry-standard encryption and security measures to protect your personal information." 
-  },
-  { 
-    question: "Can I export my data?", 
-    answer: "Yes, you can export your health data and progress reports at any time from your account settings." 
-  },
-  { 
-    question: "Do you offer mobile apps?", 
-    answer: "Yes, we have iOS and Android apps available for download from the respective app stores." 
-  },
-  { 
-    question: "What support options are available?", 
-    answer: "We offer 24/7 email support, live chat during business hours, and comprehensive help documentation." 
-  },
+  { question: "How do I get started?", answer: "Sign up for an account and complete the initial health assessment. We'll create a personalized plan for you." },
+  { question: "What's included in the free plan?", answer: "The free plan includes basic health tracking, daily reminders, and access to our community features." },
+  { question: "How secure is my data?", answer: "We use industry-standard encryption and security measures to protect your personal information." },
+  { question: "Can I export my data?", answer: "Yes, you can export your health data and progress reports at any time from your account settings." },
+  { question: "Do you offer mobile apps?", answer: "Yes, we have iOS and Android apps available for download from the respective app stores." },
+  { question: "What support options are available?", answer: "We offer 24/7 email support, live chat during business hours, and comprehensive help documentation." },
 ];
 
 const ContactUs = () => {
-  // TODO: implement the contact form logic to send a email
-  // TODO: connect to the backend
-
+  const { toast } = useToast();
+  
   const form = useForm({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -74,8 +58,16 @@ const ContactUs = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Contact Form Submission:", data);
+  const onSubmit = async (data) => {
+    try {
+      console.log("Form Data:", data);
+      await axios.post(`${API_BASE_URL}/contact-requests/`, data);
+      toast({ title: "Message Sent!", description: "We'll get back to you soon." });
+      form.reset(); // Reset form after successful submission
+    } catch (error) {
+      toast({ title: "Error", description: "Could not send message.", variant: "destructive" });
+      console.error("Contact Form Submission Error:", error);
+    }
   };
 
   return (
@@ -134,22 +126,7 @@ const ContactUs = () => {
                   <MessagesSquare className="w-6 h-6 text-emerald-600" />
                 </div>
                 <h3 className="font-semibold mb-2">Live Chat</h3>
-                <p className="text-gray-600">Available 24/7</p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="mt-2">
-                      Start Chat
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle className="text-center text-xl font-bold text-white">Live Chat (Coming Soon)</DialogTitle>
-                    </DialogHeader>
-                    <p className="text-center text-gray-600">
-                      Our live chat feature will be available soon.
-                    </p>
-                  </DialogContent>
-                </Dialog>
+                <p className="text-gray-600">Chat with us online for instant support.</p>
               </div>
             </Card>
           </div>
@@ -164,61 +141,28 @@ const ContactUs = () => {
               </h2>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <Controller
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Controller
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your Email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Controller
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Subject</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Subject" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Controller
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Message</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="Your Message" className="min-h-[120px]" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {["name", "email", "subject", "message"].map((field, index) => (
+                    <Controller
+                      key={index}
+                      control={form.control}
+                      name={field}
+                      render={({ field: inputProps }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {field.charAt(0).toUpperCase() + field.slice(1)}
+                          </FormLabel>
+                          <FormControl>
+                            {field === "message" ? (
+                              <Textarea placeholder={`Your ${field}`} className="min-h-[120px]" {...inputProps} />
+                            ) : (
+                              <Input placeholder={`Your ${field}`} {...inputProps} />
+                            )}
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
 
                   <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700">
                     Send Message
@@ -250,4 +194,5 @@ const ContactUs = () => {
 };
 
 export default ContactUs;
+
   

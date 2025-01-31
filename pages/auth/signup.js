@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import axios from "axios"; // Import axios for API calls
 
 // Contexts
 import { useAuth } from "@/contexts/UserContext";
@@ -9,10 +10,10 @@ import { useAuth } from "@/contexts/UserContext";
 import { auth } from "../../config/firebase-config";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 const SignUp = () => {
   const { user } = useAuth();
-  // TODO: Add loading state
-  // TODO: Add logic to verify email - either confirm email or send verification email
   const {
     register,
     handleSubmit,
@@ -21,52 +22,85 @@ const SignUp = () => {
   } = useForm();
 
   const router = useRouter();
-  const [authError, setAuthError] = useState('');
+  const [authError, setAuthError] = useState("");
 
+  // ✅ Updated onSubmit function
   const onSubmit = async (data) => {
     try {
-      setAuthError('');
+      setAuthError("");
+      
+      // 1️⃣ Create User in Firebase
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
-
-      // TODO: add api call to create user setting with user.id
-  
+      
       await updateProfile(user, {
         displayName: data.username,
       });
 
+      // 2️⃣ Call backend to create default settings
+      await createUserSettings(user.uid, data);
+
+      // 3️⃣ Redirect to health survey
       router.push("/survey/health");
     } catch (error) {
       console.error("Sign Up Error:", error);
       switch (error.code) {
-        case 'auth/email-already-in-use':
-          setAuthError('This email is already registered');
+        case "auth/email-already-in-use":
+          setAuthError("This email is already registered");
           break;
-        case 'auth/invalid-email':
-          setAuthError('Invalid email address');
+        case "auth/invalid-email":
+          setAuthError("Invalid email address");
           break;
-        case 'auth/operation-not-allowed':
-          setAuthError('Email/password accounts are not enabled');
+        case "auth/operation-not-allowed":
+          setAuthError("Email/password accounts are not enabled");
           break;
-        case 'auth/weak-password':
-          setAuthError('Password is too weak');
+        case "auth/weak-password":
+          setAuthError("Password is too weak");
           break;
         default:
-          setAuthError('An error occurred during signup');
+          setAuthError("An error occurred during signup");
       }
     }
   };
 
-  // TODO: clean the useEffect
-  // break: this takes it to home page first before the questionnaire page
+  const createUserSettings = async (userId, data) => {
+    try {
+      const defaultSettings = {
+        full_name: "",
+        username: data.username,
+        email: data.email,
+        phone: "",
+        bio: "",
+        notifications: {
+          email_updates: true,
+          task_reminders: true,
+          newsletter: true,
+          push_reminders: true,
+          health_alerts: true,
+          achievements: true,
+        },
+        preferences: {
+          dark_mode: false,
+          compact_mode: false,
+          language: "English",
+          timezone: "GMT",
+        },
+      };
 
-
-  // TODO: don't let them in before they have completed the questionnaire
-  useEffect(() => {
-    if (user?.token) {
-      router.push("/home");
+      // ✅ POST request to create user settings
+      await axios.post(`${API_BASE_URL}/${userId}`, defaultSettings);
+      console.log("User settings created successfully.");
+    } catch (error) {
+      console.error("Error creating user settings:", error);
     }
-  }, [user]);
+  };
+
+  // // Redirect if already logged in
+  // useEffect(() => {
+  //   if (user.token) {
+  //     router.push("/home");
+  //   }
+  // }, [user]);
 
   return (
     <div className="flex items-center justify-center min-h-screen font-mona">
@@ -81,10 +115,10 @@ const SignUp = () => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label className="block text-[#F1AEC6] text-sm font-bold mb-2">username</label>
+            <label className="block text-[#F1AEC6] text-sm font-bold mb-2">Username</label>
             <input
               type="text"
-              {...register("username", { required: "username is required" })}
+              {...register("username", { required: "Username is required" })}
               className="w-full p-2 border border-[#C4D6D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F1AEC6]"
               placeholder="Enter your username"
             />
@@ -108,13 +142,11 @@ const SignUp = () => {
               type="password"
               {...register("password", {
                 required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters long",
-                },
+                minLength: { value: 6, message: "Password must be at least 6 characters long" },
               })}
               className="w-full p-2 border border-[#C4D6D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F1AEC6]"
-              placeholder="Create a password"/>
+              placeholder="Create a password"
+            />
             {errors.password && <p className="text-red-500 font-semibold mt-1 text-xs">{errors.password.message}</p>}
           </div>
 
@@ -124,11 +156,7 @@ const SignUp = () => {
               type="password"
               {...register("confirmPassword", { 
                 required: "Please confirm your password",
-                validate: (val) => {
-                  if (watch('password') != val) {
-                    return "Passwords do not match";
-                  }
-                }
+                validate: (val) => watch("password") === val || "Passwords do not match",
               })}
               className="w-full p-2 border border-[#C4D6D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F1AEC6]"
               placeholder="Confirm your password"
