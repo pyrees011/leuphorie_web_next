@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from 'next/router';
+import { useChat } from '@/hooks/useChat';
 
 // icons
 import { AtSign, Send, LinkIcon, message } from "lucide-react"
@@ -13,110 +15,80 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import ChatLayout from "@/layout/chatLayout"
 import { cn } from "@/lib/utils"
 
-export default function ChatID({ id }) {
-    // TODO: clean the useState
-    // TODO: possible make the global state (react query or redux)
-    // TODO: connect to the backend
-    // TODO: add the loading state
-    // TODO: add the error state
-    const [message, setMessage] = useState("")
-    const [chat, setChat] = useState([
-        {
-            id: 1,
-            message: "Hello, how are you?",
-            role: "user"
-        },
-        {
-            id: 2,
-            message: "I'm fine, thank you!",
-            role: "model"
-        },
-        {
-            id: 3,
-            message: "What is the weather in Tokyo?",
-            role: "user"
-        },
-        {
-            id: 4,
-            message: "The weather in Tokyo is sunny and warm.",
-            role: "model"
-        },
-        {
-            id: 5,
-            message: "What is the weather in Tokyo?",
-            role: "user"
-        },
-    ])
-    const chatContainerRef = useRef(null)
+export default function ChatSession() {
+    const router = useRouter();
+    const { id } = router.query;
+    const { messages, isLoading, sendMessage, isError } = useChat(id);
 
-    const scrollToBottom = () => {
-        chatContainerRef.current?.scrollIntoView({ behavior: "smooth" })
+  console.log('messages', messages)
+
+  const [newMessage, setNewMessage] = useState("");
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+    
+    try {
+      await sendMessage({ message: newMessage, sessionId: id });
+      setNewMessage("");
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
+  }
 
-    // TODO: clean the useEffect
-    useEffect(() => {
-        scrollToBottom()
-    }, [chat])
+  if (isLoading) {
+    return (
+      <ChatLayout>
+        <div>Loading...</div>
+      </ChatLayout>
+    );
+  }
 
-
-    const handleSendMessage = (e) => {
-        e.preventDefault()
-        setChat([...chat, {
-            id: chat.length + 1,
-            message: message,
-            role: "user"
-        }])
-        setMessage("")
-    }
-
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-            handleSendMessage(e)
-        }
-    }
+  if (isError) {
+    return (
+      <ChatLayout>
+        <div>Error loading messages</div>
+      </ChatLayout>
+    );
+  }
 
   return (
     <ChatLayout>
-                <main className="mx-auto w-full flex flex-col justify-between px-6 py-8 bg-gray-100 rounded-tl-3xl flex-1">
-
-                <div className="flex flex-col overflow-y-auto xl:h-[600px]">
-                    { chat.map((messages) => (
-                        <MessageComponent key={messages.id} messages={messages} />
-                    )) }
-
-                    <div ref={chatContainerRef} />
-                </div>
-
-                    {/* Input Section */}
-                    <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex gap-2">
-                    <LinkIcon className="w-5 h-5 text-gray-400" />
-                    <AtSign className="w-5 h-5 text-gray-400" />
-                </div>
-                <Input
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="pl-16 pr-12 py-6 bg-white border-gray-200 text-gray-800"
-                    placeholder="Write a message here..."
-                    onKeyDown={handleKeyDown}
-                />
-                <Button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-700"
-                    size="icon"
-                    onClick={handleSendMessage}
-                >
-                    <Send className="w-4 h-4" />
-                    <span className="sr-only">Send message</span>
-                </Button>
+      <div className="flex flex-col h-full flex-grow">
+        {/* Messages list */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {messages?.map((msg) => (
+            <div key={msg.id} className={`mb-4 ${!msg.is_bot ? 'text-right' : 'text-left'}`}>
+              <div className={`inline-block p-3 rounded-lg ${
+                !msg.is_bot ? 'bg-emerald-500 text-white' : 'bg-gray-100'
+              }`}>
+                {msg.content}
+              </div>
             </div>
-        </main>
+          ))}
+        </div>
 
-        {/* Footer */}
-        <footer className="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-500 border-t">
-          <p>AI responses may contain inaccuracies. Please verify important information.</p>
-        </footer>
+        {/* Message input */}
+        <div className="p-4 mt-auto bg-gray-100">
+          <div className="relative">
+            <Input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              className="pr-12"
+              placeholder="Type a message..."
+              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+            />
+            <Button
+              className="absolute right-0 top-1/2 -translate-y-1/2"
+              size="icon"
+              onClick={handleSendMessage}
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
     </ChatLayout>
-  )
+  );
 }
 
 const MessageComponent = ({ messages }) => {
