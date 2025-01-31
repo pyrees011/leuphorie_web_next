@@ -1,11 +1,17 @@
 import { useState } from "react";
+
+// icons
 import { Key, Smartphone } from "lucide-react";
+
+// components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
+
+// hooks
+import { useToast } from "@/hooks/use-toast";
 
 const SecuritySettings = () => {
   const { toast } = useToast();

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import axios from "axios"; // Import axios for API calls
+
+// axios
+import { useAxiosInstance } from "@/axios/axios";
 
 // Contexts
 import { useAuth } from "@/contexts/UserContext";
@@ -13,7 +15,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const SignUp = () => {
-  const { user } = useAuth();
+  const axiosInstance = useAxiosInstance();
   const {
     register,
     handleSubmit,
@@ -88,19 +90,19 @@ const SignUp = () => {
       };
 
       // ✅ POST request to create user settings
-      await axios.post(`${API_BASE_URL}/${userId}`, defaultSettings);
+      await axiosInstance.post(`${API_BASE_URL}/${userId}`, defaultSettings);
       console.log("User settings created successfully.");
     } catch (error) {
       console.error("Error creating user settings:", error);
     }
   };
 
-  // // Redirect if already logged in
-  // useEffect(() => {
-  //   if (user.token) {
-  //     router.push("/home");
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      router.push("/home");
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen font-mona">

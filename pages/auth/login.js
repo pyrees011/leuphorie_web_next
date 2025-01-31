@@ -12,9 +12,6 @@ import { auth } from "../../config/firebase-config";
 const Login = () => {
   // TODO: Add loading state
   const router = useRouter();
-  const { user } = useAuth();
-
-  console.log("login", user)
 
   const {
     register,
@@ -57,6 +54,13 @@ const Login = () => {
     const userCredential = await signInWithPopup(auth, provider);
     console.log(userCredential);
   }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      router.push("/home");
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen font-mona">

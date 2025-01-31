@@ -21,8 +21,10 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // Backend API
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+
+// axios
+import { useAxiosInstance } from "@/axios/axios";
 
 // Layout
 import AuthenticatedLayout from "@/layout/authenticatedLayout";
@@ -47,7 +49,8 @@ const faqs = [
 
 const ContactUs = () => {
   const { toast } = useToast();
-  
+  const axiosInstance = useAxiosInstance();
+
   const form = useForm({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -61,7 +64,7 @@ const ContactUs = () => {
   const onSubmit = async (data) => {
     try {
       console.log("Form Data:", data);
-      await axios.post(`${API_BASE_URL}/contact-requests/`, data);
+      await axiosInstance.post(`${API_BASE_URL}/contact-requests/`, data);
       toast({ title: "Message Sent!", description: "We'll get back to you soon." });
       form.reset(); // Reset form after successful submission
     } catch (error) {

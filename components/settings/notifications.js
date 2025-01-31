@@ -5,15 +5,18 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 import { useUser } from "@/contexts/UserContext";
+
+// axios
+import { useAxiosInstance } from "@/axios/axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const NotificationSettings = () => {
   const { user } = useUser();
   const { toast } = useToast();
-
+  const axiosInstance = useAxiosInstance();
+  
   const [notifications, setNotifications] = useState({
     emailUpdates: true,
     taskReminders: true,
@@ -26,7 +29,7 @@ const NotificationSettings = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/${user.id}/notifications`, {
+      await axiosInstance.put(`${API_BASE_URL}/${user.id}/notifications`, {
         email_updates: notifications.emailUpdates,
         task_reminders: notifications.taskReminders,
         newsletter: notifications.newsletter,
