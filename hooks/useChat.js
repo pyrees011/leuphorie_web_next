@@ -13,7 +13,7 @@ import { chatService } from "@/services/chatService";
 export const useChat = (sessionId = null) => {
     const { user, isLoading } = useUser();
     const queryClient = useQueryClient();
-    const axiosInstance = useAxiosInstance();
+    const axiosInstance = useAxiosInstance("chat");
     const router = useRouter();
 
     const getMessagesHook = useQuery({

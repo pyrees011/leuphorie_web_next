@@ -2,27 +2,25 @@ import { useAxiosInstance } from '@/axios/axios'
 
 
 export const taskService = {
-  getTasks: async (axiosInstance) => {
-    const { data } = await axiosInstance.get(`/categories`)
+  getTasks: async (axiosInstance, userId) => {
+    const { data } = await axiosInstance.get(`categories/${userId}`)
     return data
   },
 
-  updateTaskStatus: async (axiosInstance, { categoryId, taskId, status }) => {
+  updateTaskStatus: async (axiosInstance, userId, { categoryId, taskId, status }) => {
     const { data } = await axiosInstance.patch(
-      `/categories/${categoryId}/tasks/${taskId}/status`, 
+      `categories/${userId}/${categoryId}/tasks/${taskId}/status`, 
       { status }
     );
     return data;
   },
 
-  createTask: async (task, categoryId, axiosInstance) => {
-    const { data } = await axiosInstance.post(`/categories/${categoryId}/tasks`, task)
+  createTask: async (userId, task, categoryId, axiosInstance) => {
+    const { data } = await axiosInstance.post(`categories/${userId}/${categoryId}/tasks`, task)
     return data
   },
 
-  deleteTask: async (categoryId, taskId, axiosInstance) => {
-    console.log("categoryId service", categoryId);
-    console.log("taskId service", taskId);
-    await axiosInstance.delete(`/categories/${categoryId}/tasks/${taskId}`)
+  deleteTask: async (userId, categoryId, taskId, axiosInstance) => {
+    await axiosInstance.delete(`categories/${userId}/${categoryId}/tasks/${taskId}`)
   }
 } 

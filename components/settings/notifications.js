@@ -10,12 +10,10 @@ import { useUser } from "@/contexts/UserContext";
 // axios
 import { useAxiosInstance } from "@/axios/axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 const NotificationSettings = () => {
   const { user } = useUser();
   const { toast } = useToast();
-  const axiosInstance = useAxiosInstance();
+  const axiosInstance = useAxiosInstance("settings");
   
   const [notifications, setNotifications] = useState({
     emailUpdates: true,
@@ -29,7 +27,7 @@ const NotificationSettings = () => {
 
   const handleUpdate = async () => {
     try {
-      await axiosInstance.put(`${API_BASE_URL}/${user.id}/notifications`, {
+      await axiosInstance.put(`settings/${user.id}/notifications`, {
         email_updates: notifications.emailUpdates,
         task_reminders: notifications.taskReminders,
         newsletter: notifications.newsletter,

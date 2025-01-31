@@ -6,12 +6,12 @@ import { useUser } from '@/contexts/UserContext'
 export const useTasks = () => {
 
   const queryClient = useQueryClient()
-  const axiosInstance = useAxiosInstance()
+  const axiosInstance = useAxiosInstance("task")
   const { user, isLoading: isLoadingUser } = useUser()
 
   const { data: categories, isLoading: isLoadingCategories } = useQuery(
     'tasks', 
-    () => taskService.getTasks(axiosInstance),
+    () => taskService.getTasks(axiosInstance, user?.id),
     {
       // Only fetch when user is loaded and authenticated
       enabled: !isLoadingUser && !!user?.token,
@@ -24,6 +24,7 @@ export const useTasks = () => {
     ({ categoryId, taskId, status }) => {
       return taskService.updateTaskStatus(
         axiosInstance, 
+        user?.id,
         { 
           categoryId, 
           taskId, 
@@ -40,7 +41,7 @@ export const useTasks = () => {
 
   const createTaskMutation = useMutation(
     ({task, categoryId}) => {
-      return taskService.createTask(task, categoryId, axiosInstance)
+      return taskService.createTask(user?.id, task, categoryId, axiosInstance)
     }, 
     {
       onSuccess: () => {
@@ -53,7 +54,7 @@ export const useTasks = () => {
     ({categoryId, taskId}) => {
       console.log("categoryId hook", categoryId);
       console.log("taskId hook", taskId);
-      return taskService.deleteTask(categoryId, taskId, axiosInstance)
+      return taskService.deleteTask(user?.id, categoryId, taskId, axiosInstance)
     }, 
     {
       onSuccess: () => {
