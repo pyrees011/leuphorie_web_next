@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 // axios
 import { useAxiosInstance } from "@/axios/axios";
 
-// Contexts
-import { useAuth } from "@/contexts/UserContext";
+// hooks
+import { useTasks } from "@/hooks/useTasks";
 
 // Firebase
 import { auth } from "../../config/firebase-config";
@@ -14,6 +14,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const SignUp = () => {
   const axiosInstance = useAxiosInstance("settings");
+  const { createCategory } = useTasks();
   const {
     register,
     handleSubmit,
@@ -23,7 +24,6 @@ const SignUp = () => {
 
   const router = useRouter();
   const [authError, setAuthError] = useState("");
-
   // ✅ Updated onSubmit function
   const onSubmit = async (data) => {
     try {
@@ -40,7 +40,12 @@ const SignUp = () => {
       // 2️⃣ Call backend to create default settings
       await createUserSettings(user.uid, data);
 
-      // 3️⃣ Redirect to health survey
+      // 3️⃣ Create default categories
+      await createCategory("Personal");
+      await createCategory("Work");
+      await createCategory("Health");
+
+      // 4️⃣ Redirect to health survey
       router.push("/survey/health");
     } catch (error) {
       console.error("Sign Up Error:", error);

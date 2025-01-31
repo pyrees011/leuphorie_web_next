@@ -28,7 +28,7 @@ import AuthenticatedLayout from "@/layout/authenticatedLayout"
 export default function Home() {
   const { user, isLoading, updateUser } = useUser();
 
-  console.log("user", user);
+  console.log("user", user)
 
   const handleSignOut = async () => {
     await signOut(auth);

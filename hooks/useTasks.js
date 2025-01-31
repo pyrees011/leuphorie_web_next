@@ -39,6 +39,18 @@ export const useTasks = () => {
     }
   )
 
+
+  const createCategoryMutation = useMutation(
+    (name) => {
+      return taskService.createCategory(axiosInstance, user?.id, name)
+    }, 
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('tasks')
+      },
+    }
+  )
+
   const createTaskMutation = useMutation(
     ({task, categoryId}) => {
       return taskService.createTask(user?.id, task, categoryId, axiosInstance)
@@ -87,5 +99,6 @@ export const useTasks = () => {
     updateTask: updateTaskMutation.mutate,
     createTask: createTaskMutation.mutate,
     deleteTask: deleteTaskMutation.mutate,
+    createCategory: createCategoryMutation.mutate,
   }
 }
