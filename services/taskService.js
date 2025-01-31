@@ -7,6 +7,11 @@ export const taskService = {
     return data
   },
 
+  createCategory: async (axiosInstance, userId, name) => {
+    const { data } = await axiosInstance.post(`categories/${userId}`, name)
+    return data
+  },
+
   updateTaskStatus: async (axiosInstance, userId, { categoryId, taskId, status }) => {
     const { data } = await axiosInstance.patch(
       `categories/${userId}/${categoryId}/tasks/${taskId}/status`, 
