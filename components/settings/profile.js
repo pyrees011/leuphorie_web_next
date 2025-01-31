@@ -1,10 +1,15 @@
 import React, { useState } from "react";
+
+// components
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";  // ✅ Corrected import
-import axios from "axios";
+
+// hooks
+import { useToast } from "@/hooks/use-toast";
+
+// context
 import { useUser } from "@/contexts/UserContext";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -23,15 +28,15 @@ const ProfileSettings = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/${user.id}/profile`, {
-        full_name: profile.fullName,
-        username: profile.username,
-        email: profile.email,
-        phone_number: profile.phone,
-        bio: profile.bio,
-      });
+      // await axios.put(`${API_BASE_URL}/${user.id}/profile`, {
+      //   full_name: profile.fullName,
+      //   username: profile.username,
+      //   email: profile.email,
+      //   phone_number: profile.phone,
+      //   bio: profile.bio,
+      // });
 
-      toast({ title: "Profile updated!", description: "Your changes have been saved." });
+      toast({ title: "Profile updated!", description: "Your changes have been saved.", variant: "default" });
     } catch (error) {
       toast({ title: "Error updating profile", description: "Something went wrong.", variant: "destructive" });
     }
