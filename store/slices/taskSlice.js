@@ -17,6 +17,7 @@ const initialState = {
 };
 
 export const taskSlice = createSlice({
+    // TODO: clean up the code (probably not needed) not using redux for task
     name: "tasks",
     initialState,
     reducers: {

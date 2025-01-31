@@ -32,7 +32,7 @@ const SignUp = () => {
       // 1️⃣ Create User in Firebase
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
-
+      
       await updateProfile(user, {
         displayName: data.username,
       });
@@ -63,7 +63,6 @@ const SignUp = () => {
     }
   };
 
-  // 🔹 Helper function to send API request to create user settings
   const createUserSettings = async (userId, data) => {
     try {
       const defaultSettings = {

@@ -19,12 +19,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 // layout
 import ChatLayout from "@/layout/chatLayout"
 
+// hooks
+import { useChat } from "@/hooks/useChat"
+
 export default function Chat() {
   const [message, setMessage] = useState("")
+  const { sendMessage } = useChat()
 
-  const handleSendMessage = () => {
-    console.log('message', message)
-    setMessage("")
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+    
+    try {
+      await sendMessage({ message });
+      setMessage("");
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   }
 
   const handleKeyDown = (e) => {

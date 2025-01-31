@@ -2,6 +2,12 @@ import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/router"
 
+// contexts
+import { useUser } from "@/contexts/UserContext";
+
+// hooks
+import { useQuestionnaire } from "@/hooks/useQuestionnaire";
+
 // shadecn components
 import { Button } from "@/components/ui/button"
 
@@ -18,6 +24,8 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 export default function health() {
+  const { user, isLoading } = useUser();
+  const { questionnaire, createQuestionnaire, updateQuestionnaire, deleteQuestionnaire } = useQuestionnaire();
   const router = useRouter()
   const [selectedOption, setSelectedOption] = useState([
     {id: 1, answer: ""},
@@ -47,9 +55,18 @@ export default function health() {
     // TODO: send data to backend and redirect to signup page
     // router.push("/")
     if (currentStep == 6) {
-      console.log("Continue")
-      // TODO: send data to backend and redirect to signup page
-      router.push("/")
+
+      selectedOption.forEach(({ id, answer }) => {
+        const questionnaireForm = {
+          user_id: user.id,
+          question_id: id,
+          response: answer
+        }
+        createQuestionnaire(questionnaireForm)
+      })
+
+      router.push("/home")
+     
     } else {
       setCurrentStep(prev => prev + 1)
     }
@@ -132,7 +149,7 @@ export default function health() {
         }} />
         }
         { selectedOption[currentStep - 1].answer !== "" &&
-        <FooterButton 
+        <FooterButton
           className="bg-green-500 hover:bg-green-600 text-white" 
           text="Continue" 
           handleClick={handleContinueClick} 
