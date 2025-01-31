@@ -26,12 +26,7 @@ import Footer from "../components/Footer"
 import AuthenticatedLayout from "@/layout/authenticatedLayout"
 
 export default function Home() {
-  console.log("Current User ID:", auth.currentUser?.uid);
-
   const { user, isLoading, updateUser } = useUser();
-
-  // Log user state for debugging
-  console.log("User State:", user);
 
   const handleSignOut = async () => {
     await signOut(auth);
