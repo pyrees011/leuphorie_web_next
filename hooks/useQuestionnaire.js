@@ -11,13 +11,14 @@ import { questionnaireService } from "@/services/questionnaireService";
 
 export const useQuestionnaire = () => {
   const { user, isLoading } = useUser();
+  console.log("user", user);
   const queryClient = useQueryClient();
-  const axiosInstance = useAxiosInstance();
+  const axiosInstance = useAxiosInstance("questionnaire");
 
   const { data: questionnaire, isLoading: questionnaireLoading, error: questionnaireError } = useQuery({
-    queryKey: ["questionnaire", user.id],
-    queryFn: () => questionnaireService.getQuestionnaireForUser(axiosInstance, user.id),
-    enabled: !!user.token && !isLoading,
+    queryKey: ["questionnaire", user?.id],
+    queryFn: () => questionnaireService.getQuestionnaireForUser(axiosInstance, user?.id),
+    enabled: !!user?.token && !isLoading,
     retry: 1
   })
 
@@ -32,25 +33,25 @@ export const useQuestionnaire = () => {
     (questionnaire) => questionnaireService.sendQuestionnaire(axiosInstance, questionnaire),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["questionnaire", user.id] })
+        queryClient.invalidateQueries({ queryKey: ["questionnaire", user?.id] })
       }
     }
   )
 
   const updateQuestionnaire = useMutation(
-    ({ questionId, questionnaire }) => questionnaireService.updateQuestionnaireParticularForUser(axiosInstance, user.id, questionId, questionnaire),
+    ({ questionId, questionnaire }) => questionnaireService.updateQuestionnaireParticularForUser(axiosInstance, user?.id, questionId, questionnaire),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["questionnaire", user.id] })
+        queryClient.invalidateQueries({ queryKey: ["questionnaire", user?.id] })
       }
     }
   )
 
   const deleteQuestionnaire = useMutation(
-    (questionnaireId) => questionnaireService.deleteQuestionnaireParticularForUser(axiosInstance, user.id, questionnaireId),
+    (questionnaireId) => questionnaireService.deleteQuestionnaireParticularForUser(axiosInstance, user?.id, questionnaireId),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["questionnaire", user.id] })
+        queryClient.invalidateQueries({ queryKey: ["questionnaire", user?.id] })
       }
     }
   )

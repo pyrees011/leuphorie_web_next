@@ -1,11 +1,24 @@
 import axios from 'axios';
 import { auth } from '../config/firebase-config';
 
-const API_URL = 'http://127.0.0.1:8000/api/v1';
+export const useAxiosInstance = (service) => {
 
-export const useAxiosInstance = () => {
+  let API_BASE_URL;
+
+  if (service === "settings") {
+    API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL_SETTINGS;
+  } else if (service === "questionnaire") {
+    API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL_QUESTIONNAIRE;
+  } else if (service === "chat") {
+    API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL_CHAT;
+  } else if (service === "contact") {
+    API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL_CONTACT;
+  } else if (service === "task") {
+    API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL_TASK;
+  }
+
   const instance = axios.create({
-    baseURL: API_URL,
+    baseURL: API_BASE_URL,
     headers: {
       'Content-Type': 'application/json',
     },

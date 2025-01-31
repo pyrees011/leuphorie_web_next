@@ -19,12 +19,6 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  // TODO: clean the useEffect
-  useEffect(() => {
-    if (user.token) {
-      router.push("/home");
-    }
-  }, [user]);
 
   const onSubmit = async (data) => {
     try {

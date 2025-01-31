@@ -12,10 +12,8 @@ import { useAuth } from "@/contexts/UserContext";
 import { auth } from "../../config/firebase-config";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 const SignUp = () => {
-  const axiosInstance = useAxiosInstance();
+  const axiosInstance = useAxiosInstance("settings");
   const {
     register,
     handleSubmit,
@@ -68,29 +66,12 @@ const SignUp = () => {
   const createUserSettings = async (userId, data) => {
     try {
       const defaultSettings = {
-        full_name: "",
         username: data.username,
         email: data.email,
-        phone: "",
-        bio: "",
-        notifications: {
-          email_updates: true,
-          task_reminders: true,
-          newsletter: true,
-          push_reminders: true,
-          health_alerts: true,
-          achievements: true,
-        },
-        preferences: {
-          dark_mode: false,
-          compact_mode: false,
-          language: "English",
-          timezone: "GMT",
-        },
-      };
+      }
 
       // ✅ POST request to create user settings
-      await axiosInstance.post(`${API_BASE_URL}/${userId}`, defaultSettings);
+      await axiosInstance.post(`settings/${userId}`, defaultSettings);
       console.log("User settings created successfully.");
     } catch (error) {
       console.error("Error creating user settings:", error);

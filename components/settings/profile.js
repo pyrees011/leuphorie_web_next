@@ -15,10 +15,8 @@ import { useUser } from "@/contexts/UserContext";
 // axios
 import { useAxiosInstance } from "@/axios/axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 const ProfileSettings = () => {
-  const axiosInstance = useAxiosInstance();
+  const axiosInstance = useAxiosInstance("settings");
   const { user } = useUser();
   const { toast } = useToast();
 
@@ -32,7 +30,7 @@ const ProfileSettings = () => {
 
   const handleUpdate = async () => {
     try {
-      // await axiosInstance.put(`${API_BASE_URL}/${user.id}/profile`, {
+      // await axiosInstance.put(`settings/${user.id}/profile`, {
       //   full_name: profile.fullName,
       //   username: profile.username,
       //   email: profile.email,

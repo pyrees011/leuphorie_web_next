@@ -29,8 +29,6 @@ import { useAxiosInstance } from "@/axios/axios";
 // Layout
 import AuthenticatedLayout from "@/layout/authenticatedLayout";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
@@ -49,7 +47,7 @@ const faqs = [
 
 const ContactUs = () => {
   const { toast } = useToast();
-  const axiosInstance = useAxiosInstance();
+  const axiosInstance = useAxiosInstance("contact");
 
   const form = useForm({
     resolver: zodResolver(contactSchema),
@@ -64,7 +62,7 @@ const ContactUs = () => {
   const onSubmit = async (data) => {
     try {
       console.log("Form Data:", data);
-      await axiosInstance.post(`${API_BASE_URL}/contact-requests/`, data);
+      await axiosInstance.post(`contact-requests/`, data);
       toast({ title: "Message Sent!", description: "We'll get back to you soon." });
       form.reset(); // Reset form after successful submission
     } catch (error) {
